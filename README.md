@@ -1,29 +1,15 @@
-<h3 align="center">
-  <br />
-  <img src="https://user-images.githubusercontent.com/168240/39537094-61c30484-4ded-11e8-8c93-410ba0510cf4.png" alt="logo" width="750" />
-  <br />
-  <br />
-  <br />
-</h3>
-
-# ethereum-input-data-decoder
+# @arcblock/abi-decoder
 
 > Ethereum smart contract transaction input data decoder
 
-[![License](http://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/miguelmota/ethereum-input-data-decoder/master/LICENSE)
-[![Build Status](https://travis-ci.org/miguelmota/ethereum-input-data-decoder.svg?branch=master)](https://travis-ci.org/miguelmota/ethereum-input-data-decoder)
-[![dependencies Status](https://david-dm.org/miguelmota/ethereum-input-data-decoder/status.svg)](https://david-dm.org/miguelmota/ethereum-input-data-decoder)
-[![NPM version](https://badge.fury.io/js/ethereum-input-data-decoder.svg)](http://badge.fury.io/js/ethereum-input-data-decoder)
+[![License](http://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/miguelmota/@arcblock/abi-decoder/master/LICENSE)
+[![NPM version](https://badge.fury.io/js/@arcblock/abi-decoder.svg)](http://badge.fury.io/js/@arcblock/abi-decoder)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](#contributing)
-
-## Demo
-
-[https://lab.miguelmota.com/ethereum-input-data-decoder](https://lab.miguelmota.com/ethereum-input-data-decoder)
 
 ## Install
 
 ```bash
-npm install ethereum-input-data-decoder
+npm install @arcblock/abi-decoder
 ```
 
 ## Getting started
@@ -31,15 +17,15 @@ npm install ethereum-input-data-decoder
 Pass [ABI](https://github.com/ethereum/wiki/wiki/Ethereum-Contract-ABI) file path to decoder constructor:
 
 ```javascript
-const InputDataDecoder = require('ethereum-input-data-decoder');
-const decoder = new InputDataDecoder(`${__dirname}/abi.json`);
+const Decoder = require('@arcblock/abi-decoder');
+const decoder = new Decoder(`${__dirname}/abi.json`);
 ```
 
 Alternatively, you can pass ABI array object to constructor;
 
 ```javascript
 const abi = [{ ... }]
-const decoder = new InputDataDecoder(abi);
+const decoder = new Decoder(abi);
 ```
 
 [example abi](./test/abi.json)
@@ -144,7 +130,7 @@ console.log(n.toNumber()) // ERROR!
 ## Install
 
 ```bash
-npm install -g ethereum-input-data-decoder
+npm install -g @arcblock/abi-decoder
 ```
 
 ### Usage
@@ -221,9 +207,9 @@ npm test
 1. Clone repository:
 
   ```bash
-  git clone git@github.com:miguelmota/ethereum-input-data-decoder.git
+  git clone git@github.com:miguelmota/@arcblock/abi-decoder.git
 
-  cd ethereum-input-data-decoder/
+  cd @arcblock/abi-decoder/
   ```
 
 2. Install dependencies:
@@ -252,7 +238,7 @@ Pull requests are welcome!
 
 For contributions please create a new branch and submit a pull request for review.
 
-Many thanks to all the [contributors](https://github.com/miguelmota/ethereum-input-data-decoder/graphs/contributors) for making this a better library for everyone 🙏
+Many thanks to all the [contributors](https://github.com/miguelmota/@arcblock/abi-decoder/graphs/contributors) for making this a better library for everyone 🙏
 
 ## FAQ
 
@@ -270,7 +256,7 @@ Many thanks to all the [contributors](https://github.com/miguelmota/ethereum-inp
 
 - Q: Does this library support ABIEncoderV2?
 
-  - A: Yes, but it's buggy. Please submit a [bug report](https://github.com/miguelmota/ethereum-input-data-decoder/issues/new) if you encounter issues.
+  - A: Yes, but it's buggy. Please submit a [bug report](https://github.com/miguelmota/@arcblock/abi-decoder/issues/new) if you encounter issues.
 
 ## License
 

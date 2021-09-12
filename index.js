@@ -13,7 +13,9 @@ class InputDataDecoder {
     } else if (prop instanceof Object) {
       this.abi = prop
     } else {
-      throw new TypeError(`Must pass ABI array object or file path to constructor`)
+      throw new TypeError(
+        `Must pass ABI array object or file path to constructor`
+      )
     }
   }
 
@@ -36,8 +38,8 @@ class InputDataDecoder {
       }
 
       const method = obj.name || null
-      const types = obj.inputs ? obj.inputs.map(x => x.type) : []
-      const names = obj.inputs ? obj.inputs.map(x => x.name) : []
+      const types = obj.inputs ? obj.inputs.map((x) => x.type) : []
+      const names = obj.inputs ? obj.inputs.map((x) => x.name) : []
 
       // take last 32 bytes
       data = data.slice(-256)
@@ -78,76 +80,86 @@ class InputDataDecoder {
     const methodId = toHexString(dataBuf.subarray(0, 4))
     var inputsBuf = dataBuf.subarray(4)
 
-    const result = this.abi.reduce((acc, obj) => {
-      if (obj.type === 'constructor') return acc
-      if (obj.type === 'event') return acc
-      const method = obj.name || null
-      let types = obj.inputs ? obj.inputs.map(x => {
-        if (x.type.includes('tuple')) {
-          return x
-        } else {
-          return x.type
-        }
-      }) : []
-
-      let names = obj.inputs ? obj.inputs.map(x => {
-        if (x.type.includes('tuple')) {
-          return [x.name, x.components.map(a => a.name)]
-        } else {
-          return x.name
-        }
-      }) : []
-
-      const hash = genMethodId(method, types)
-
-      if (hash === methodId) {
-        let inputs = []
-
-        try {
-          inputsBuf = normalizeAddresses(types, inputsBuf)
-          inputs = ethabi.rawDecode(types, inputsBuf)
-        } catch (err) {
-          inputs = ethers.utils.defaultAbiCoder.decode(types, inputsBuf)
-          // defaultAbiCoder attaches some unwanted properties to the list object
-          inputs = deepRemoveUnwantedArrayProperties(inputs)
-
-          // TODO: do this normalization into normalizeAddresses
-          inputs = inputs.map((input, i) => {
-            if (types[i].components) {
-              const tupleTypes = types[i].components
-              return deepStripTupleAddresses(input, tupleTypes)
+    const result = this.abi.reduce(
+      (acc, obj) => {
+        if (obj.type === 'constructor') return acc
+        if (obj.type === 'event') return acc
+        const method = obj.name || null
+        let types = obj.inputs
+          ? obj.inputs.map((x) => {
+            if (x.type.includes('tuple')) {
+              return x
+            } else {
+              return x.type
             }
-            if (types[i] === 'address') {
-              return input.split('0x')[1]
-            }
-            if (types[i] === 'address[]') {
-              return input.map(address => address.split('0x')[1])
-            }
-            return input
           })
-        }
+          : []
 
-        // Map any tuple types into arrays
-        const typesToReturn = types.map(t => {
-          if (t.components) {
-            const arr = t.components.reduce((acc, cur) => [...acc, cur.type], [])
-            const tupleStr = `(${arr.join(',')})`
-            if (t.type === 'tuple[]') return tupleStr + '[]'
-            return tupleStr
+        let names = obj.inputs
+          ? obj.inputs.map((x) => {
+            if (x.type.includes('tuple')) {
+              return [x.name, x.components.map((a) => a.name)]
+            } else {
+              return x.name
+            }
+          })
+          : []
+
+        const hash = genMethodId(method, types)
+
+        if (hash === methodId) {
+          let inputs = []
+
+          try {
+            inputsBuf = normalizeAddresses(types, inputsBuf)
+            inputs = ethabi.rawDecode(types, inputsBuf)
+          } catch (err) {
+            inputs = ethers.utils.defaultAbiCoder.decode(types, inputsBuf)
+            // defaultAbiCoder attaches some unwanted properties to the list object
+            inputs = deepRemoveUnwantedArrayProperties(inputs)
+
+            // TODO: do this normalization into normalizeAddresses
+            inputs = inputs.map((input, i) => {
+              if (types[i].components) {
+                const tupleTypes = types[i].components
+                return deepStripTupleAddresses(input, tupleTypes)
+              }
+              if (types[i] === 'address') {
+                return input.split('0x')[1]
+              }
+              if (types[i] === 'address[]') {
+                return input.map((address) => address.split('0x')[1])
+              }
+              return input
+            })
           }
-          return t
-        })
 
-        return {
-          method,
-          types: typesToReturn,
-          inputs,
-          names
+          // Map any tuple types into arrays
+          const typesToReturn = types.map((t) => {
+            if (t.components) {
+              const arr = t.components.reduce(
+                (acc, cur) => [...acc, cur.type],
+                []
+              )
+              const tupleStr = `(${arr.join(',')})`
+              if (t.type === 'tuple[]') return tupleStr + '[]'
+              return tupleStr
+            }
+            return t
+          })
+
+          return {
+            method,
+            types: typesToReturn,
+            inputs,
+            names
+          }
         }
-      }
 
-      return acc
-    }, { method: null, types: [], inputs: [], names: [] })
+        return acc
+      },
+      { method: null, types: [], inputs: [], names: [] }
+    )
 
     if (!result.method) {
       try {
@@ -155,7 +167,7 @@ class InputDataDecoder {
         if (decoded) {
           return decoded
         }
-      } catch (err) { }
+      } catch (err) {}
     }
 
     return result
@@ -172,7 +184,7 @@ function deepStripTupleAddresses (input, tupleTypes) {
       return item.split('0x')[1]
     }
     if (type === 'address[]' || Array.isArray()) {
-      return item.map(a => a.split('0x')[1])
+      return item.map((a) => a.split('0x')[1])
     }
 
     if (Array.isArray(item)) {
@@ -184,10 +196,12 @@ function deepStripTupleAddresses (input, tupleTypes) {
 }
 
 function deepRemoveUnwantedArrayProperties (arr) {
-  return [...arr.map(item => {
-    if (Array.isArray(item)) return deepRemoveUnwantedArrayProperties(item)
-    return item
-  })]
+  return [
+    ...arr.map((item) => {
+      if (Array.isArray(item)) return deepRemoveUnwantedArrayProperties(item)
+      return item
+    })
+  ]
 }
 
 function normalizeAddresses (types, input) {
@@ -238,16 +252,21 @@ function handleInputs (input, tupleArray) {
     return input
   }
 
-  let ret = '(' + input.reduce((acc, x) => {
-    if (x.type === 'tuple') {
-      acc.push(handleInputs(x.components))
-    } else if (x.type === 'tuple[]') {
-      acc.push(handleInputs(x.components) + '[]')
-    } else {
-      acc.push(x.type)
-    }
-    return acc
-  }, []).join(',') + ')'
+  let ret =
+    '(' +
+    input
+      .reduce((acc, x) => {
+        if (x.type === 'tuple') {
+          acc.push(handleInputs(x.components))
+        } else if (x.type === 'tuple[]') {
+          acc.push(handleInputs(x.components) + '[]')
+        } else {
+          acc.push(x.type)
+        }
+        return acc
+      }, [])
+      .join(',') +
+    ')'
 
   if (tupleArray) {
     return ret + '[]'
@@ -257,17 +276,23 @@ function handleInputs (input, tupleArray) {
 }
 
 function genMethodId (methodName, types) {
-  const input = methodName + '(' + (types.reduce((acc, x) => {
-    acc.push(handleInputs(x, x.type === 'tuple[]'))
-    return acc
-  }, []).join(',')) + ')'
+  const input =
+    methodName +
+    '(' +
+    types
+      .reduce((acc, x) => {
+        acc.push(handleInputs(x, x.type === 'tuple[]'))
+        return acc
+      }, [])
+      .join(',') +
+    ')'
 
   return ethers.utils.keccak256(Buffer.from(input)).slice(2, 10)
 }
 
 function toHexString (byteArray) {
   return Array.from(byteArray, function (byte) {
-    return ('0' + (byte & 0xFF).toString(16)).slice(-2)
+    return ('0' + (byte & 0xff).toString(16)).slice(-2)
   }).join('')
 }
 
